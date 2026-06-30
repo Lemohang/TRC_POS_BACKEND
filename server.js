@@ -1,3 +1,4 @@
+require("./dns-fix");
 require("dotenv").config();
 
 const app = require("./src/app");
