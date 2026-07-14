@@ -9,7 +9,7 @@ const testRoutes = require("./routes/testRoutes");
 const app = express();
 
 
-app.use(helmet());
+
 
 
 app.use(cors({
@@ -20,6 +20,9 @@ app.use(cors({
     credentials: true,
 }));
 
+app.options(/.*/, cors());
+
+app.use(helmet());
 
 app.use(express.json());
 
