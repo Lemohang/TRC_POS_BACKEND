@@ -6,48 +6,39 @@ const cookieParser = require("cookie-parser");
 
 const authRoutes = require("./routes/auth.routes");
 const testRoutes = require("./routes/testRoutes");
+
 const app = express();
-
-
-
-
 
 app.use(cors({
     origin: [
-        "http://localhost:3000",
-        "https://backend.onrender.com"
+        "http://localhost:3000"
     ],
     credentials: true,
 }));
 
-app.options(/.*/, cors());
+app.options("*", cors());
 
 app.use(helmet());
-
-app.use(express.json());
-
-
-app.use(express.urlencoded({
-    extended: true
-}));
-
-
-app.use(cookieParser());
-
 
 app.use(morgan("dev"));
 
 
-// Routes
+app.use(express.json());
+
+app.use(express.urlencoded({
+    extended:true
+}));
+
+app.use(cookieParser());
+
 app.use("/api/auth", authRoutes);
+
 app.use("/api/test", testRoutes);
 
-
-
-app.get("/", (req, res) => {
+app.get("/", (req,res)=>{
     res.json({
-        success: true,
-        message: "TRC POS API Running..."
+        success:true,
+        message:"TRC POS API Running..."
     });
 });
 
