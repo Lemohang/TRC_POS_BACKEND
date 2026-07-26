@@ -14,7 +14,6 @@ const registerUser = async (userData) => {
     { username },
   ],
 });
-
 if (existingUser) {
   throw new Error("Email or username already exists.");
 }
