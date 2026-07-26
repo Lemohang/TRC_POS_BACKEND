@@ -6,27 +6,27 @@ const User = require("../models/user.model");
  * Register a new user
  */
 const registerUser = async (userData) => {
-  const { fullName, email, password, role } = userData;
+ const { name, username, email, password, role } = userData;
 
   const existingUser = await User.findOne({
-    $or: [
-      { email: email.toLowerCase() }
-    ],
-  });
+  $or: [
+    { email: email.toLowerCase() },
+    { username },
+  ],
+});
 
-  if (existingUser) {
-    throw new Error("User already exists.");
-  }
-
+if (existingUser) {
+  throw new Error("Email or username already exists.");
+}
   const hashedPassword = await bcrypt.hash(password, 10);
 
   const user = await User.create({
-    fullName,
-    email: email.toLowerCase(),
-    password: hashedPassword,
-    role,
-  });
-
+  name,
+  username,
+  email: email.toLowerCase(),
+  password: hashedPassword,
+  role,
+});
   const token = jwt.sign(
     {
       id: user._id,
@@ -39,14 +39,15 @@ const registerUser = async (userData) => {
   );
 
   return {
-    token,
-    user: {
-      id: user._id,
-      fullName: user.fullName,
-      email: user.email,
-      role: user.role,
-    },
-  };
+  token,
+  user: {
+    id: user._id,
+    name: user.name,
+    username: user.username,
+    email: user.email,
+    role: user.role,
+  },
+};
 };
 
 /**
@@ -82,7 +83,8 @@ const loginUser = async (email, password) => {
     token,
     user: {
       id: user._id,
-      fullName: user.fullName,
+      name: user.name,
+      username: user.username,
       email: user.email,
       role: user.role,
     },
