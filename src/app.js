@@ -6,6 +6,9 @@ const cookieParser = require("cookie-parser");
 
 const authRoutes = require("./routes/auth.routes");
 const testRoutes = require("./routes/testRoutes");
+const inventoryRoutes = require("./routes/inventory.routes");
+const supplierRoutes = require("./routes/supplier.routes");
+const purchaseRoutes = require("./routes/purchase.routes");
 
 const app = express();
 
@@ -34,6 +37,9 @@ app.use(cookieParser());
 app.use("/api/auth", authRoutes);
 
 app.use("/api/test", testRoutes);
+app.use("/api/inventory", inventoryRoutes);
+app.use("/api/suppliers", supplierRoutes);
+app.use("/api/purchases", purchaseRoutes);
 
 app.get("/", (req,res)=>{
     res.json({
