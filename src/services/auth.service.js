@@ -6,13 +6,10 @@ const User = require("../models/user.model");
  * Register a new user
  */
 const registerUser = async (userData) => {
- const { name, username, email, password, role } = userData;
+ const { name,email, password, role } = userData;
 
   const existingUser = await User.findOne({
-  $or: [
-    { email: email.toLowerCase() },
-    { username },
-  ],
+  email: email.toLowerCase(),
 });
 if (existingUser) {
   throw new Error("Email or username already exists.");
@@ -21,7 +18,6 @@ if (existingUser) {
 
   const user = await User.create({
   name,
-  username,
   email: email.toLowerCase(),
   password: hashedPassword,
   role,
@@ -42,7 +38,6 @@ if (existingUser) {
   user: {
     id: user._id,
     name: user.name,
-    username: user.username,
     email: user.email,
     role: user.role,
   },
@@ -83,7 +78,6 @@ const loginUser = async (email, password) => {
     user: {
       id: user._id,
       name: user.name,
-      username: user.username,
       email: user.email,
       role: user.role,
     },
