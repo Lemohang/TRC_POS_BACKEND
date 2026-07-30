@@ -2,40 +2,26 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user.model");
 
-
 /**
  * Register a new user
  */
 const registerUser = async (userData) => {
-  const {
-    name,
-    email,
-    password,
-    role,
-  } = userData;
-
+ const { name,email, password, role } = userData;
 
   const existingUser = await User.findOne({
-    email: email.toLowerCase(),
-  });
-
-
-  if (existingUser) {
-    throw new Error("Email already exists.");
-  }
-
-
+  email: email.toLowerCase(),
+});
+if (existingUser) {
+  throw new Error("Email or username already exists.");
+}
   const hashedPassword = await bcrypt.hash(password, 10);
 
-
   const user = await User.create({
-    name,
-    email: email.toLowerCase(),
-    password: hashedPassword,
-    role,
-  });
-
-
+  name,
+  email: email.toLowerCase(),
+  password: hashedPassword,
+  role,
+});
   const token = jwt.sign(
     {
       id: user._id,
@@ -48,22 +34,20 @@ const registerUser = async (userData) => {
   );
 
   return {
-    token,
-
-    user: {
-      id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-    },
-  };
+  token,
+  user: {
+    id: user._id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+  },
+};
 };
 
 /**
  * Login user
  */
 const loginUser = async (email, password) => {
-
   const user = await User.findOne({
     email: email.toLowerCase(),
   });
@@ -72,10 +56,7 @@ const loginUser = async (email, password) => {
     throw new Error("Invalid email or password.");
   }
 
-  const isMatch = await bcrypt.compare(
-    password,
-    user.password
-  );
+  const isMatch = await bcrypt.compare(password, user.password);
 
   if (!isMatch) {
     throw new Error("Invalid email or password.");
@@ -94,7 +75,6 @@ const loginUser = async (email, password) => {
 
   return {
     token,
-
     user: {
       id: user._id,
       name: user.name,
@@ -105,18 +85,14 @@ const loginUser = async (email, password) => {
 };
 
 /**
- * Get current user profile
+ * Get current user
  */
 const getProfile = async (userId) => {
-
-  const user = await User.findById(userId)
-    .select("-password");
-
+  const user = await User.findById(userId).select("-password");
 
   if (!user) {
     throw new Error("User not found.");
   }
-
 
   return user;
 };

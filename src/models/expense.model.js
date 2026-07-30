@@ -20,6 +20,14 @@ const expenseSchema = new mongoose.Schema(
       min: 0,
     },
 
+<<<<<<< HEAD
+=======
+    shift: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Shift",
+    },
+
+>>>>>>> c28990666a8e3193eba32ce642609aaa0595f84a
     paymentMethod: {
       type: String,
       enum: [

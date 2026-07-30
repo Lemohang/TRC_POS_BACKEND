@@ -24,6 +24,13 @@ const debtPaymentSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
+<<<<<<< HEAD
+=======
+    shift: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Shift",
+    },
+>>>>>>> c28990666a8e3193eba32ce642609aaa0595f84a
   },
   {
     timestamps: true,

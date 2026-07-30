@@ -2,6 +2,14 @@ const mongoose = require("mongoose");
 
 const saleSchema = new mongoose.Schema(
   {
+<<<<<<< HEAD
+=======
+    orderNumber: {
+    type: Number,
+    unique: true,
+    index: true,
+   },
+>>>>>>> c28990666a8e3193eba32ce642609aaa0595f84a
     table: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Table",
@@ -21,6 +29,15 @@ const saleSchema = new mongoose.Schema(
       default: null,
     },
 
+<<<<<<< HEAD
+=======
+    //shift
+    shift: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Shift",
+    },
+
+>>>>>>> c28990666a8e3193eba32ce642609aaa0595f84a
     subtotal: {
       type: Number,
       default: 0,
