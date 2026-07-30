@@ -56,6 +56,7 @@ app.use(
   "/api/worker-debt-payments",
   workerDebtPaymentRoutes
 );
+
 app.use("/api/expenses", expenseRoutes);
 app.use("/api/shifts", shiftRoutes);
 app.use("/api/cash-ups", cashUpRoutes);
