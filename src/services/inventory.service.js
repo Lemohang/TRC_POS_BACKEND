@@ -1,4 +1,4 @@
-const Inventory = require("../models/inventory.model");
+const Inventory = require('../models/Inventory.model');
 
 /**
  * Create a new inventory item
@@ -9,7 +9,7 @@ const createInventory = async (data) => {
   });
 
   if (existingItem) {
-    throw new Error("Product already exists.");
+    throw new Error('Product already exists.');
   }
 
   const inventory = await Inventory.create(data);
@@ -33,7 +33,7 @@ const getInventoryById = async (id) => {
   const inventory = await Inventory.findById(id);
 
   if (!inventory) {
-    throw new Error("Inventory item not found.");
+    throw new Error('Inventory item not found.');
   }
 
   return inventory;
@@ -43,17 +43,13 @@ const getInventoryById = async (id) => {
  * Update inventory
  */
 const updateInventory = async (id, data) => {
-  const inventory = await Inventory.findByIdAndUpdate(
-    id,
-    data,
-    {
-      new: true,
-      runValidators: true,
-    }
-  );
+  const inventory = await Inventory.findByIdAndUpdate(id, data, {
+    new: true,
+    runValidators: true,
+  });
 
   if (!inventory) {
-    throw new Error("Inventory item not found.");
+    throw new Error('Inventory item not found.');
   }
 
   return inventory;
@@ -66,7 +62,7 @@ const deleteInventory = async (id) => {
   const inventory = await Inventory.findByIdAndDelete(id);
 
   if (!inventory) {
-    throw new Error("Inventory item not found.");
+    throw new Error('Inventory item not found.');
   }
 
   return inventory;
@@ -79,7 +75,7 @@ const increaseStock = async (id, quantity) => {
   const inventory = await Inventory.findById(id);
 
   if (!inventory) {
-    throw new Error("Inventory item not found.");
+    throw new Error('Inventory item not found.');
   }
 
   inventory.stock += quantity;
@@ -96,11 +92,11 @@ const decreaseStock = async (id, quantity) => {
   const inventory = await Inventory.findById(id);
 
   if (!inventory) {
-    throw new Error("Inventory item not found.");
+    throw new Error('Inventory item not found.');
   }
 
   if (inventory.stock < quantity) {
-    throw new Error("Insufficient stock.");
+    throw new Error('Insufficient stock.');
   }
 
   inventory.stock -= quantity;
@@ -116,7 +112,7 @@ const decreaseStock = async (id, quantity) => {
 const getLowStockItems = async () => {
   return await Inventory.find({
     $expr: {
-      $lte: ["$stock", "$lowStockThreshold"],
+      $lte: ['$stock', '$lowStockThreshold'],
     },
   });
 };
