@@ -47,7 +47,6 @@ const registerUser = async (userData) => {
     }
   );
 
-
   return {
     token,
 
@@ -60,8 +59,6 @@ const registerUser = async (userData) => {
   };
 };
 
-
-
 /**
  * Login user
  */
@@ -71,22 +68,18 @@ const loginUser = async (email, password) => {
     email: email.toLowerCase(),
   });
 
-
   if (!user) {
     throw new Error("Invalid email or password.");
   }
-
 
   const isMatch = await bcrypt.compare(
     password,
     user.password
   );
 
-
   if (!isMatch) {
     throw new Error("Invalid email or password.");
   }
-
 
   const token = jwt.sign(
     {
@@ -99,7 +92,6 @@ const loginUser = async (email, password) => {
     }
   );
 
-
   return {
     token,
 
@@ -111,8 +103,6 @@ const loginUser = async (email, password) => {
     },
   };
 };
-
-
 
 /**
  * Get current user profile
@@ -130,8 +120,6 @@ const getProfile = async (userId) => {
 
   return user;
 };
-
-
 
 module.exports = {
   registerUser,
