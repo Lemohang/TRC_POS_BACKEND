@@ -16,7 +16,6 @@ const createWorker = async (req, res) => {
     });
   }
 };
-
 const getAllWorkers = async (req, res) => {
   try {
     const workers = await workerService.getAllWorkers();

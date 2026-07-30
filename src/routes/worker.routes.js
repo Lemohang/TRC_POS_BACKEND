@@ -16,7 +16,6 @@ router.patch(
   "/:id/status",
   workerController.toggleWorkerStatus
 );
-
 router.delete("/:id", workerController.deleteWorker);
 
 module.exports = router;

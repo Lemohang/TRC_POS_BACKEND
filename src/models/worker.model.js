@@ -18,7 +18,6 @@ const workerSchema = new mongoose.Schema(
       enum: ["Cashier"],
       default: "Cashier",
     },
-
     active: {
       type: Boolean,
       default: true,

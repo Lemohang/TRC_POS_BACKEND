@@ -88,6 +88,7 @@ const deleteWorker = async (id) => {
   return worker;
 };
 
+
 module.exports = {
   createWorker,
   getAllWorkers,
