@@ -1,4 +1,4 @@
-const Inventory = require("../models/inventory.model");
+const Inventory = require("../models/Inventory.model");
 
 /**
  * Create a new inventory item
