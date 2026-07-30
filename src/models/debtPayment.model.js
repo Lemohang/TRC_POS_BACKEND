@@ -1,10 +1,10 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const debtPaymentSchema = new mongoose.Schema(
   {
     debt: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "WorkerDebt",
+      ref: 'WorkerDebt',
       required: true,
     },
 
@@ -16,25 +16,22 @@ const debtPaymentSchema = new mongoose.Schema(
 
     paymentMethod: {
       type: String,
-      enum: ["Cash", "Card", "Mobile Money", "Bank Transfer"],
+      enum: ['Cash', 'Card', 'Mobile Money', 'Bank Transfer'],
       required: true,
     },
 
     receivedBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
     },
-<<<<<<< HEAD
-=======
     shift: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Shift",
+      ref: 'Shift',
     },
->>>>>>> c28990666a8e3193eba32ce642609aaa0595f84a
   },
   {
     timestamps: true,
   }
 );
 
-module.exports = mongoose.model("DebtPayment", debtPaymentSchema);
+module.exports = mongoose.model('DebtPayment', debtPaymentSchema);

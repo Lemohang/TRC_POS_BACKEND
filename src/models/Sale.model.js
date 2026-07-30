@@ -1,43 +1,37 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const saleSchema = new mongoose.Schema(
   {
-<<<<<<< HEAD
-=======
     orderNumber: {
-    type: Number,
-    unique: true,
-    index: true,
-   },
->>>>>>> c28990666a8e3193eba32ce642609aaa0595f84a
+      type: Number,
+      unique: true,
+      index: true,
+    },
     table: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Table",
+      ref: 'Table',
       required: true,
     },
 
     cashier: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
       required: false, // Will become required after JWT authentication
     },
 
     // Worker making the purchase on credit (optional)
     worker: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Worker",
+      ref: 'Worker',
       default: null,
     },
 
-<<<<<<< HEAD
-=======
     //shift
     shift: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Shift",
+      ref: 'Shift',
     },
 
->>>>>>> c28990666a8e3193eba32ce642609aaa0595f84a
     subtotal: {
       type: Number,
       default: 0,
@@ -58,20 +52,14 @@ const saleSchema = new mongoose.Schema(
 
     paymentMethod: {
       type: String,
-      enum: [
-        "Cash",
-        "Card",
-        "Mobile Money",
-        "Bank Transfer",
-        "Worker Debt",
-      ],
+      enum: ['Cash', 'Card', 'Mobile Money', 'Bank Transfer', 'Worker Debt'],
       required: true,
     },
 
     status: {
       type: String,
-      enum: ["Pending", "Completed", "Cancelled"],
-      default: "Completed",
+      enum: ['Pending', 'Completed', 'Cancelled'],
+      default: 'Completed',
     },
 
     notes: {
@@ -84,4 +72,4 @@ const saleSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("Sale", saleSchema);
+module.exports = mongoose.model('Sale', saleSchema);

@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const expenseSchema = new mongoose.Schema(
   {
@@ -20,22 +20,14 @@ const expenseSchema = new mongoose.Schema(
       min: 0,
     },
 
-<<<<<<< HEAD
-=======
     shift: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Shift",
+      ref: 'Shift',
     },
 
->>>>>>> c28990666a8e3193eba32ce642609aaa0595f84a
     paymentMethod: {
       type: String,
-      enum: [
-        "Cash",
-        "Card",
-        "Mobile Money",
-        "Bank Transfer",
-      ],
+      enum: ['Cash', 'Card', 'Mobile Money', 'Bank Transfer'],
       required: true,
     },
 
@@ -46,7 +38,7 @@ const expenseSchema = new mongoose.Schema(
 
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
     },
   },
   {
@@ -54,4 +46,4 @@ const expenseSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("Expense", expenseSchema);
+module.exports = mongoose.model('Expense', expenseSchema);

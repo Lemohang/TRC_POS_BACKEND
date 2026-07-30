@@ -1,4 +1,4 @@
-const workerService = require("../services/worker.service");
+const workerService = require('../services/worker.service');
 
 const createWorker = async (req, res) => {
   try {
@@ -6,8 +6,8 @@ const createWorker = async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: "Worker created successfully.",
-      data: worker,
+      message: 'Worker created successfully.',
+      data: { worker },
     });
   } catch (error) {
     res.status(400).json({
@@ -35,9 +35,7 @@ const getAllWorkers = async (req, res) => {
 
 const getWorkerById = async (req, res) => {
   try {
-    const worker = await workerService.getWorkerById(
-      req.params.id
-    );
+    const worker = await workerService.getWorkerById(req.params.id);
 
     res.json({
       success: true,
@@ -53,14 +51,11 @@ const getWorkerById = async (req, res) => {
 
 const updateWorker = async (req, res) => {
   try {
-    const worker = await workerService.updateWorker(
-      req.params.id,
-      req.body
-    );
+    const worker = await workerService.updateWorker(req.params.id, req.body);
 
     res.json({
       success: true,
-      message: "Worker updated successfully.",
+      message: 'Worker updated successfully.',
       data: worker,
     });
   } catch (error) {
@@ -73,13 +68,11 @@ const updateWorker = async (req, res) => {
 
 const toggleWorkerStatus = async (req, res) => {
   try {
-    const worker = await workerService.toggleWorkerStatus(
-      req.params.id
-    );
+    const worker = await workerService.toggleWorkerStatus(req.params.id);
 
     res.json({
       success: true,
-      message: "Worker status updated.",
+      message: 'Worker status updated.',
       data: worker,
     });
   } catch (error) {
@@ -92,13 +85,11 @@ const toggleWorkerStatus = async (req, res) => {
 
 const deleteWorker = async (req, res) => {
   try {
-    const worker = await workerService.deleteWorker(
-      req.params.id
-    );
+    const worker = await workerService.deleteWorker(req.params.id);
 
     res.json({
       success: true,
-      message: "Worker deleted successfully.",
+      message: 'Worker deleted successfully.',
       data: worker,
     });
   } catch (error) {

@@ -1,23 +1,15 @@
-const saleService = require("../services/sale.service");
+const saleService = require('../services/sale.service');
 
-<<<<<<< HEAD
-// Create Sale
-=======
 // ==========================
 // Create New Order
 // ==========================
->>>>>>> c28990666a8e3193eba32ce642609aaa0595f84a
 const createSale = async (req, res) => {
   try {
     const sale = await saleService.createSale(req.body);
 
     res.status(201).json({
       success: true,
-<<<<<<< HEAD
-      message: "Sale completed successfully.",
-=======
-      message: "Order created successfully.",
->>>>>>> c28990666a8e3193eba32ce642609aaa0595f84a
+      message: 'Order created successfully.',
       data: sale,
     });
   } catch (error) {
@@ -28,22 +20,16 @@ const createSale = async (req, res) => {
   }
 };
 
-<<<<<<< HEAD
-// Get All Sales
-=======
 // ==========================
 // Add Items to Existing Order
 // ==========================
 const addItemsToSale = async (req, res) => {
   try {
-    const sale = await saleService.addItemsToSale(
-      req.params.saleId,
-      req.body.items
-    );
+    const sale = await saleService.addItemsToSale(req.params.saleId, req.body.items);
 
     res.json({
       success: true,
-      message: "Items added successfully.",
+      message: 'Items added successfully.',
       data: sale,
     });
   } catch (error) {
@@ -59,9 +45,7 @@ const addItemsToSale = async (req, res) => {
 // ==========================
 const getOpenSaleByTable = async (req, res) => {
   try {
-    const sale = await saleService.getOpenSaleByTable(
-      req.params.tableId
-    );
+    const sale = await saleService.getOpenSaleByTable(req.params.tableId);
 
     res.json({
       success: true,
@@ -78,7 +62,6 @@ const getOpenSaleByTable = async (req, res) => {
 // ==========================
 // Get All Orders
 // ==========================
->>>>>>> c28990666a8e3193eba32ce642609aaa0595f84a
 const getAllSales = async (req, res) => {
   try {
     const sales = await saleService.getAllSales();
@@ -96,13 +79,9 @@ const getAllSales = async (req, res) => {
   }
 };
 
-<<<<<<< HEAD
-// Get Sale By ID
-=======
 // ==========================
 // Get Order By ID
 // ==========================
->>>>>>> c28990666a8e3193eba32ce642609aaa0595f84a
 const getSaleById = async (req, res) => {
   try {
     const sale = await saleService.getSaleById(req.params.id);
@@ -119,12 +98,6 @@ const getSaleById = async (req, res) => {
   }
 };
 
-<<<<<<< HEAD
-module.exports = {
-  createSale,
-  getAllSales,
-  getSaleById,
-=======
 // ==========================
 // Complete Order (Customer Pays)
 // ==========================
@@ -134,7 +107,7 @@ const completeSale = async (req, res) => {
 
     res.json({
       success: true,
-      message: "Order completed successfully.",
+      message: 'Order completed successfully.',
       data: sale,
     });
   } catch (error) {
@@ -154,7 +127,7 @@ const reopenSale = async (req, res) => {
 
     res.json({
       success: true,
-      message: "Order reopened successfully.",
+      message: 'Order reopened successfully.',
       data: sale,
     });
   } catch (error) {
@@ -174,7 +147,7 @@ const cancelSale = async (req, res) => {
 
     res.json({
       success: true,
-      message: "Order cancelled successfully.",
+      message: 'Order cancelled successfully.',
       data: sale,
     });
   } catch (error) {
@@ -194,5 +167,4 @@ module.exports = {
   completeSale,
   reopenSale,
   cancelSale,
->>>>>>> c28990666a8e3193eba32ce642609aaa0595f84a
 };
