@@ -17,7 +17,7 @@ const inventorySchema = new mongoose.Schema(
     barcode: {
       type: String,
       unique: true,
-      sparse: true, // Allows multiple documents without a barcode
+      sparse: true,
       trim: true,
     },
 
