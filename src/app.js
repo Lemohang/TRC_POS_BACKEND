@@ -17,6 +17,7 @@ const workerDebtPaymentRoutes = require('./routes/workerDebtPayment.routes');
 const expenseRoutes = require('./routes/expense.routes');
 const shiftRoutes = require('./routes/shift.routes');
 const cashUpRoutes = require('./routes/cashUp.routes');
+const inventoryItemRoutes = require("./routes/inventoryItem.routes");
 
 const app = express();
 
@@ -56,6 +57,7 @@ app.use('/api/expenses', expenseRoutes);
 app.use('/api/shifts', shiftRoutes);
 app.use('/api/cash-ups', cashUpRoutes);
 app.use('/api/workers', workerRoutes);
+app.use("/api/inventory-items", inventoryItemRoutes);
 
 app.get('/', (req, res) => {
   res.json({
