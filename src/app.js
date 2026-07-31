@@ -22,7 +22,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: ['http://localhost:3000'],
+    origin: ['https://trc-pos.vercel.app', 'http://localhost:3000'],
     credentials: true,
   })
 );
