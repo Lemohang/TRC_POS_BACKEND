@@ -1,7 +1,7 @@
-import InventoryItem from "../models/inventoryItem.model.js";
+const InventoryItem = require("../models/inventoryItem.model");
 
 // Create Item
-export const createInventoryItem = async (req, res) => {
+const createInventoryItem = async (req, res) => {
   try {
     const item = await InventoryItem.create(req.body);
 
@@ -18,7 +18,7 @@ export const createInventoryItem = async (req, res) => {
 };
 
 // Get All Items
-export const getInventoryItems = async (req, res) => {
+const getInventoryItems = async (req, res) => {
   try {
     const items = await InventoryItem.find().sort({ createdAt: -1 });
 
@@ -35,7 +35,7 @@ export const getInventoryItems = async (req, res) => {
 };
 
 // Get Single Item
-export const getInventoryItem = async (req, res) => {
+const getInventoryItem = async (req, res) => {
   try {
     const item = await InventoryItem.findById(req.params.id);
 
@@ -59,12 +59,15 @@ export const getInventoryItem = async (req, res) => {
 };
 
 // Update Item
-export const updateInventoryItem = async (req, res) => {
+const updateInventoryItem = async (req, res) => {
   try {
     const item = await InventoryItem.findByIdAndUpdate(
       req.params.id,
       req.body,
-      { new: true }
+      {
+        new: true,
+        runValidators: true,
+      }
     );
 
     if (!item) {
@@ -87,7 +90,7 @@ export const updateInventoryItem = async (req, res) => {
 };
 
 // Delete Item
-export const deleteInventoryItem = async (req, res) => {
+const deleteInventoryItem = async (req, res) => {
   try {
     const item = await InventoryItem.findByIdAndDelete(req.params.id);
 
@@ -108,4 +111,12 @@ export const deleteInventoryItem = async (req, res) => {
       message: error.message,
     });
   }
+};
+
+module.exports = {
+  createInventoryItem,
+  getInventoryItems,
+  getInventoryItem,
+  updateInventoryItem,
+  deleteInventoryItem,
 };

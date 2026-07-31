@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 const inventoryItemSchema = new mongoose.Schema(
   {
@@ -7,56 +7,39 @@ const inventoryItemSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-
     category: {
       type: String,
       required: true,
       trim: true,
     },
-
     unit: {
       type: String,
       required: true,
-      enum: [
-        "pcs",
-        "kg",
-        "g",
-        "l",
-        "ml",
-        "box",
-        "pack",
-        "bottle",
-      ],
+      enum: ["pcs", "kg", "g", "l", "ml", "box", "pack", "bottle"],
     },
-
     buyingPrice: {
       type: Number,
       required: true,
       min: 0,
     },
-
     sellingPrice: {
       type: Number,
       required: true,
       min: 0,
     },
-
     stock: {
       type: Number,
       default: 0,
       min: 0,
     },
-
     minimumStock: {
       type: Number,
       default: 0,
     },
-
     barcode: {
       type: String,
       default: "",
     },
-
     isActive: {
       type: Boolean,
       default: true,
@@ -67,4 +50,4 @@ const inventoryItemSchema = new mongoose.Schema(
   }
 );
 
-export default mongoose.model("InventoryItem", inventoryItemSchema);
+module.exports = mongoose.model("InventoryItem", inventoryItemSchema);
