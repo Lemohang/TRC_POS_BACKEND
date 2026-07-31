@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const inventorySchema = new mongoose.Schema(
   {
@@ -23,7 +23,7 @@ const inventorySchema = new mongoose.Schema(
 
     supplier: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Supplier",
+      ref: 'Supplier',
       required: false,
     },
 
@@ -66,9 +66,14 @@ const inventorySchema = new mongoose.Schema(
       default: true,
     },
 
+    unit: {
+      type: String,
+      default: 'pcs',
+    },
+
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
     },
   },
   {
@@ -76,4 +81,4 @@ const inventorySchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("Inventory", inventorySchema);
+module.exports = mongoose.model('Inventory', inventorySchema);

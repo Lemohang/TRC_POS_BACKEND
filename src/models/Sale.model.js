@@ -58,8 +58,8 @@ const saleSchema = new mongoose.Schema(
 
     status: {
       type: String,
-      enum: ['Pending', 'Completed', 'Cancelled'],
-      default: 'Completed',
+      enum: ['Open', 'Paid', 'Cancelled'],
+      default: 'Open',
     },
 
     notes: {
