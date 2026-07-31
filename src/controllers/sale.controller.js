@@ -1,23 +1,13 @@
 const saleService = require('../services/sale.service');
 
-// ==========================
-// Create New Order
-// ==========================
 const createSale = async (req, res) => {
-  console.log('SALE DATA:', saleData);
+  console.log('SALE DATA:', req.body);
   try {
     const sale = await saleService.createSale(req.body);
-
-    res.status(201).json({
-      success: true,
-      message: 'Order created successfully.',
-      data: sale,
-    });
+    res.status(201).json({ success: true, message: 'Order created successfully.', data: sale });
   } catch (error) {
-    res.status(400).json({
-      success: false,
-      message: error.message,
-    });
+    console.error('CREATE SALE ERROR:', error);
+    res.status(400).json({ success: false, message: error.message });
   }
 };
 

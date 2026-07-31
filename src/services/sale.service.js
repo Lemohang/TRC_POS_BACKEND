@@ -11,8 +11,6 @@ const counterService = require('./counter.service');
 // CREATE SALE
 // ==========================
 const createSale = async (saleData) => {
-  console.log('SALE DATA RECEIVED');
-  console.log(JSON.stringify(saleData, null, 2));
   const session = await mongoose.startSession();
 
   try {

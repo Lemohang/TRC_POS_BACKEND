@@ -36,32 +36,6 @@ const saleSchema = new mongoose.Schema(
       default: null,
     },
 
-    items: [
-      {
-        product: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: 'Inventory',
-        },
-
-        name: {
-          type: String,
-          required: true,
-        },
-
-        quantity: {
-          type: Number,
-          required: true,
-          min: 1,
-        },
-
-        price: {
-          type: Number,
-          required: true,
-          min: 0,
-        },
-      },
-    ],
-
     subtotal: {
       type: Number,
       default: 0,
@@ -102,4 +76,4 @@ const saleSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model('Sale', saleSchema);
+module.exports = mongoose.models.Sale || mongoose.model('Sale', saleSchema);
