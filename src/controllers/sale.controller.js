@@ -4,6 +4,7 @@ const saleService = require('../services/sale.service');
 // Create New Order
 // ==========================
 const createSale = async (req, res) => {
+  console.log('SALE DATA:', saleData);
   try {
     const sale = await saleService.createSale(req.body);
 

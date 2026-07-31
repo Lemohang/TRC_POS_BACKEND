@@ -7,65 +7,113 @@ const Table = require('../models/table.model');
 const WorkerDebt = require('../models/workerDebt.model');
 const counterService = require('./counter.service');
 
+// ==========================
+// CREATE SALE
+// ==========================
 const createSale = async (saleData) => {
+  console.log('SALE DATA RECEIVED');
+  console.log(JSON.stringify(saleData, null, 2));
   const session = await mongoose.startSession();
 
   try {
     session.startTransaction();
 
-    const { table, cashier, worker, paymentMethod, discount = 0, notes, items } = saleData;
+    const {
+      saleType = 'table',
+
+      table,
+
+      cashier,
+
+      worker,
+
+      paymentMethod,
+
+      discount = 0,
+
+      notes,
+
+      items,
+    } = saleData;
 
     if (!items || items.length === 0) {
       throw new Error('Sale must contain at least one item.');
     }
 
-    // Validate table
-    const selectedTable = await Table.findById(table).session(session);
+    let selectedTable = null;
 
-    if (!selectedTable) {
-      throw new Error('Table not found.');
+    // ==========================
+    // TABLE VALIDATION
+    // ==========================
+    if (saleType === 'table') {
+      if (!table) {
+        throw new Error('Table is required for table sales.');
+      }
+
+      selectedTable = await Table.findById(table).session(session);
+
+      if (!selectedTable) {
+        throw new Error('Table not found.');
+      }
+
+      const existingSale = await Sale.findOne({
+        table,
+        status: 'Open',
+      }).session(session);
+
+      if (existingSale) {
+        throw new Error(`Table ${selectedTable.name} already has an open order.`);
+      }
     }
 
-    // Prevent multiple open orders on the same table
-    const existingSale = await Sale.findOne({
-      table,
-      status: 'Open',
-    }).session(session);
-
-    if (existingSale) {
-      throw new Error(`Table ${selectedTable.name} already has an open order.`);
-    }
-
-    // Worker debt validation
+    // ==========================
+    // WORKER DEBT VALIDATION
+    // ==========================
     if (paymentMethod === 'Worker Debt' && !worker) {
       throw new Error('Worker is required for Worker Debt purchases.');
     }
 
-    // Generate order number
     const orderNumber = await counterService.getNextSequence('sale', session);
 
-    // Create sale
+    // ==========================
+    // CREATE SALE
+    // ==========================
     const [sale] = await Sale.create(
       [
         {
           orderNumber,
-          table,
+
+          saleType,
+
+          table: saleType === 'table' ? table : null,
+
           cashier,
+
           worker,
+
           paymentMethod,
+
           subtotal: 0,
+
           total: 0,
+
           discount,
+
           notes,
+
           status: 'Open',
         },
       ],
-      { session }
+      {
+        session,
+      }
     );
 
     let subtotal = 0;
 
-    // Process sale items
+    // ==========================
+    // PROCESS ITEMS
+    // ==========================
     for (const item of items) {
       const inventory = await Inventory.findById(item.inventory).session(session);
 
@@ -83,46 +131,74 @@ const createSale = async (saleData) => {
         [
           {
             sale: sale._id,
+
             inventory: inventory._id,
+
             quantity: item.quantity,
+
             buyingPrice: inventory.buyingPrice,
+
             sellingPrice: inventory.sellingPrice,
+
             total: lineTotal,
           },
         ],
-        { session }
+        {
+          session,
+        }
       );
 
       inventory.stock -= item.quantity;
 
-      await inventory.save({ session });
+      await inventory.save({
+        session,
+      });
 
       subtotal += lineTotal;
     }
 
     sale.subtotal = subtotal;
-    sale.total = subtotal - discount;
 
-    await sale.save({ session });
+    sale.total = Math.max(subtotal - discount, 0);
 
-    // Occupy table
-    selectedTable.status = 'Occupied';
-    await selectedTable.save({ session });
+    await sale.save({
+      session,
+    });
 
-    // Create worker debt if needed
+    // ==========================
+    // OCCUPY TABLE
+    // ==========================
+    if (saleType === 'table' && selectedTable) {
+      selectedTable.status = 'Occupied';
+
+      await selectedTable.save({
+        session,
+      });
+    }
+
+    // ==========================
+    // CREATE WORKER DEBT
+    // ==========================
     if (paymentMethod === 'Worker Debt') {
       await WorkerDebt.create(
         [
           {
             worker,
+
             sale: sale._id,
+
             amount: sale.total,
+
             balance: sale.total,
+
             status: 'Pending',
+
             createdBy: cashier,
           },
         ],
-        { session }
+        {
+          session,
+        }
       );
     }
 
@@ -131,11 +207,16 @@ const createSale = async (saleData) => {
     return await Sale.findById(sale._id).populate('cashier').populate('worker').populate('table');
   } catch (error) {
     await session.abortTransaction();
+
     throw error;
   } finally {
     session.endSession();
   }
 };
+
+// ==========================
+// ADD ITEMS TO SALE
+// ==========================
 const addItemsToSale = async (saleId, items) => {
   const session = await mongoose.startSession();
 
@@ -171,42 +252,60 @@ const addItemsToSale = async (saleId, items) => {
         [
           {
             sale: sale._id,
+
             inventory: inventory._id,
+
             quantity: item.quantity,
+
             buyingPrice: inventory.buyingPrice,
+
             sellingPrice: inventory.sellingPrice,
+
             total: lineTotal,
           },
         ],
-        { session }
+        {
+          session,
+        }
       );
 
       inventory.stock -= item.quantity;
-      await inventory.save({ session });
+
+      await inventory.save({
+        session,
+      });
 
       subtotal += lineTotal;
     }
 
     sale.subtotal = subtotal;
+
     sale.total = subtotal - sale.discount;
 
-    await sale.save({ session });
+    await sale.save({
+      session,
+    });
 
     await session.commitTransaction();
 
     return await Sale.findById(sale._id).populate('cashier').populate('worker').populate('table');
   } catch (error) {
     await session.abortTransaction();
+
     throw error;
   } finally {
     session.endSession();
   }
 };
 
+// ==========================
+// GET OPEN SALE BY TABLE
+// ==========================
 const getOpenSaleByTable = async (tableId) => {
   const sale = await Sale.findOne({
     table: tableId,
     status: 'Open',
+    saleType: 'table',
   })
     .populate('cashier')
     .populate('worker')
@@ -226,12 +325,18 @@ const getOpenSaleByTable = async (tableId) => {
   };
 };
 
+// ==========================
+// GET ALL SALES
+// ==========================
 const getAllSales = async () => {
   return await Sale.find().populate('cashier').populate('worker').populate('table').sort({
     orderNumber: -1,
   });
 };
 
+// ==========================
+// GET SALE BY ID
+// ==========================
 const getSaleById = async (id) => {
   const sale = await Sale.findById(id).populate('cashier').populate('worker').populate('table');
 
@@ -249,6 +354,9 @@ const getSaleById = async (id) => {
   };
 };
 
+// ==========================
+// COMPLETE SALE
+// ==========================
 const completeSale = async (id) => {
   const session = await mongoose.startSession();
 
@@ -267,27 +375,39 @@ const completeSale = async (id) => {
 
     sale.status = 'Paid';
 
-    await sale.save({ session });
+    await sale.save({
+      session,
+    });
 
-    await Table.findByIdAndUpdate(
-      sale.table,
-      {
-        status: 'Available',
-      },
-      { session }
-    );
+    // Only release tables
+    // for restaurant orders
+    if (sale.saleType === 'table' && sale.table) {
+      await Table.findByIdAndUpdate(
+        sale.table,
+        {
+          status: 'Available',
+        },
+        {
+          session,
+        }
+      );
+    }
 
     await session.commitTransaction();
 
     return await Sale.findById(sale._id).populate('cashier').populate('worker').populate('table');
   } catch (error) {
     await session.abortTransaction();
+
     throw error;
   } finally {
     session.endSession();
   }
 };
 
+// ==========================
+// REOPEN SALE
+// ==========================
 const reopenSale = async (id) => {
   const session = await mongoose.startSession();
 
@@ -304,39 +424,55 @@ const reopenSale = async (id) => {
       throw new Error('Only paid orders can be reopened.');
     }
 
-    // Prevent reopening if another order is already open on the table
-    const existingOpenOrder = await Sale.findOne({
-      table: sale.table,
-      status: 'Open',
-      _id: { $ne: sale._id },
-    }).session(session);
+    if (sale.saleType === 'table' && sale.table) {
+      const existingOpenOrder = await Sale.findOne({
+        table: sale.table,
 
-    if (existingOpenOrder) {
-      throw new Error('Another open order already exists for this table.');
+        status: 'Open',
+
+        _id: {
+          $ne: sale._id,
+        },
+      }).session(session);
+
+      if (existingOpenOrder) {
+        throw new Error('Another open order already exists for this table.');
+      }
     }
 
     sale.status = 'Open';
-    await sale.save({ session });
 
-    await Table.findByIdAndUpdate(
-      sale.table,
-      {
-        status: 'Occupied',
-      },
-      { session }
-    );
+    await sale.save({
+      session,
+    });
+
+    if (sale.saleType === 'table' && sale.table) {
+      await Table.findByIdAndUpdate(
+        sale.table,
+        {
+          status: 'Occupied',
+        },
+        {
+          session,
+        }
+      );
+    }
 
     await session.commitTransaction();
 
     return await Sale.findById(sale._id).populate('cashier').populate('worker').populate('table');
   } catch (error) {
     await session.abortTransaction();
+
     throw error;
   } finally {
     session.endSession();
   }
 };
 
+// ==========================
+// CANCEL SALE
+// ==========================
 const cancelSale = async (id) => {
   const session = await mongoose.startSession();
 
@@ -357,44 +493,68 @@ const cancelSale = async (id) => {
       sale: sale._id,
     }).session(session);
 
+    // Restore inventory
     for (const item of items) {
       const inventory = await Inventory.findById(item.inventory).session(session);
 
       if (inventory) {
         inventory.stock += item.quantity;
-        await inventory.save({ session });
+
+        await inventory.save({
+          session,
+        });
       }
     }
 
     sale.status = 'Cancelled';
-    await sale.save({ session });
 
-    await Table.findByIdAndUpdate(
-      sale.table,
-      {
-        status: 'Available',
-      },
-      { session }
-    );
+    await sale.save({
+      session,
+    });
+
+    // Release table only
+    // for table sales
+    if (sale.saleType === 'table' && sale.table) {
+      await Table.findByIdAndUpdate(
+        sale.table,
+        {
+          status: 'Available',
+        },
+        {
+          session,
+        }
+      );
+    }
 
     await session.commitTransaction();
 
     return await Sale.findById(sale._id).populate('cashier').populate('worker').populate('table');
   } catch (error) {
     await session.abortTransaction();
+
     throw error;
   } finally {
     session.endSession();
   }
 };
 
+// ==========================
+// EXPORTS
+// ==========================
 module.exports = {
   createSale,
+
   addItemsToSale,
+
   getOpenSaleByTable,
+
   getAllSales,
+
   getSaleById,
+
   completeSale,
+
   reopenSale,
+
   cancelSale,
 };

@@ -7,30 +7,60 @@ const saleSchema = new mongoose.Schema(
       unique: true,
       index: true,
     },
+
+    saleType: {
+      type: String,
+      enum: ['table', 'walk-in'],
+      required: true,
+      default: 'table',
+    },
+
     table: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Table',
-      required: true,
+      required: function () {
+        return this.saleType === 'table';
+      },
+      default: null,
     },
 
     cashier: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      required: false, // Will become required after JWT authentication
+      required: false,
     },
 
-    // Worker making the purchase on credit (optional)
     worker: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Worker',
       default: null,
     },
 
-    //shift
-    shift: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Shift',
-    },
+    items: [
+      {
+        product: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'Inventory',
+        },
+
+        name: {
+          type: String,
+          required: true,
+        },
+
+        quantity: {
+          type: Number,
+          required: true,
+          min: 1,
+        },
+
+        price: {
+          type: Number,
+          required: true,
+          min: 0,
+        },
+      },
+    ],
 
     subtotal: {
       type: Number,
