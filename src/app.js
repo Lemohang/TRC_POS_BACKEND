@@ -17,7 +17,7 @@ const workerDebtPaymentRoutes = require('./routes/workerDebtPayment.routes');
 const expenseRoutes = require('./routes/expense.routes');
 const shiftRoutes = require('./routes/shift.routes');
 const cashUpRoutes = require('./routes/cashUp.routes');
-import inventoryItemRoutes from "./routes/inventoryItem.routes.js";
+const inventoryItemRoutes = require("./routes/inventoryItem.routes");
 
 const app = express();
 
