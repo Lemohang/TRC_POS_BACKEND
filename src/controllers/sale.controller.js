@@ -6,8 +6,13 @@ const createSale = async (req, res) => {
     const sale = await saleService.createSale(req.body);
     res.status(201).json({ success: true, message: 'Order created successfully.', data: sale });
   } catch (error) {
-    console.error('CREATE SALE ERROR:', error);
-    res.status(400).json({ success: false, message: error.message });
+    console.error('CREATE SALE ERROR:');
+    console.error(error);
+
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
 

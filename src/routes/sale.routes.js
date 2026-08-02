@@ -32,16 +32,16 @@ router.get('/:id', saleController.getSaleById);
 // ==========================
 // Complete Order (Customer Pays)
 // ==========================
-router.put('/:id/complete', saleController.completeSale);
+router.patch('/:id/complete', saleController.completeSale);
 
 // ==========================
 // Reopen Order
 // ==========================
-router.put('/:id/reopen', saleController.reopenSale);
+router.patch('/:id/reopen', saleController.reopenSale);
 
 // ==========================
 // Cancel Order
 // ==========================
-router.put('/:id/cancel', saleController.cancelSale);
+router.patch('/:id/cancel', saleController.cancelSale);
 
 module.exports = router;

@@ -57,6 +57,7 @@ const createSale = async (saleData) => {
       const existingSale = await Sale.findOne({
         table,
         status: 'Open',
+        saleType: 'table',
       }).session(session);
 
       if (existingSale) {
