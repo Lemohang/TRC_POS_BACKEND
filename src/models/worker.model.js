@@ -1,55 +1,44 @@
-const mongoose = require("mongoose");
-
+const mongoose = require('mongoose');
 
 const workerSchema = new mongoose.Schema(
-{
-    name:{
-        type:String,
-        required:true,
-        trim:true
+  {
+    name: {
+      type: String,
+      required: true,
+      trim: true,
     },
 
-    phone:{
-        type:String,
-        trim:true
+    phone: {
+      type: String,
+      trim: true,
     },
 
-
-    user:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"User",
-        required:true,
-        unique:true
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: false,
+      unique: true,
     },
 
-
-    role:{
-        type:String,
-        enum:[
-            "cashier"
-        ],
-        default:"cashier"
+    role: {
+      type: String,
+      enum: ['cashier'],
+      default: 'cashier',
     },
 
-
-    totalDebt:{
-        type:Number,
-        default:0
+    totalDebt: {
+      type: Number,
+      default: 0,
     },
 
-
-    active:{
-        type:Boolean,
-        default:true
-    }
-
-},
-{
-    timestamps:true
-});
-
-
-module.exports = mongoose.model(
-    "Worker",
-    workerSchema
+    active: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
 );
+
+module.exports = mongoose.model('Worker', workerSchema);

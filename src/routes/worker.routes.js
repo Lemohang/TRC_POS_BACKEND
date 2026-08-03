@@ -14,6 +14,7 @@ router.get('/:id', workerController.getWorkerById);
 router.put('/:id', workerController.updateWorker);
 
 router.patch('/:id/status', workerController.toggleWorkerStatus);
+
 router.delete('/:id', workerController.deleteWorker);
 
 module.exports = router;

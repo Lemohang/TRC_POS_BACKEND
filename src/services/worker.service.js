@@ -66,9 +66,13 @@ const createWorker = async (workerData) => {
  * Get all workers
  */
 const getAllWorkers = async () => {
-  return await Worker.find().populate('user', 'email role').sort({
-    createdAt: -1,
-  });
+  return await Worker.find({
+    active: true,
+  })
+    .populate('user', 'email role')
+    .sort({
+      createdAt: -1,
+    });
 };
 
 /**
@@ -142,9 +146,9 @@ const deleteWorker = async (id) => {
     throw new Error('Worker not found.');
   }
 
-  worker.active = false;
+  await User.findByIdAndDelete(worker.user);
 
-  await worker.save();
+  await Worker.findByIdAndDelete(id);
 
   return worker;
 };

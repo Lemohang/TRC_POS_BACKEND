@@ -84,8 +84,12 @@ const toggleWorkerStatus = async (req, res) => {
 };
 
 const deleteWorker = async (req, res) => {
+  console.log('DELETE ROUTE HIT:', req.params.id);
+
   try {
     const worker = await workerService.deleteWorker(req.params.id);
+
+    console.log('DELETE SUCCESS');
 
     res.json({
       success: true,
@@ -93,6 +97,8 @@ const deleteWorker = async (req, res) => {
       data: worker,
     });
   } catch (error) {
+    console.error('DELETE ERROR:', error);
+
     res.status(404).json({
       success: false,
       message: error.message,
