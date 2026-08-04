@@ -36,6 +36,22 @@ const saleSchema = new mongoose.Schema(
       default: null,
     },
 
+    items: [
+      {
+        inventory: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'Inventory',
+          required: true,
+        },
+
+        quantity: {
+          type: Number,
+          required: true,
+          min: 1,
+        },
+      },
+    ],
+
     subtotal: {
       type: Number,
       default: 0,
@@ -56,7 +72,7 @@ const saleSchema = new mongoose.Schema(
 
     paymentMethod: {
       type: String,
-      enum: ['Cash', 'Card', 'Mobile Money', 'Bank Transfer', 'Worker Debt'],
+      enum: ['Cash', 'Card', 'Credit'],
       required: true,
     },
 
@@ -69,6 +85,11 @@ const saleSchema = new mongoose.Schema(
     notes: {
       type: String,
       trim: true,
+    },
+    customerType: {
+      type: String,
+      enum: ['Worker', 'Customer'],
+      default: null,
     },
   },
   {

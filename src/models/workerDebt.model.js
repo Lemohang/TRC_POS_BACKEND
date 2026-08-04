@@ -1,16 +1,16 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const workerDebtSchema = new mongoose.Schema(
   {
     worker: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Worker",
+      ref: 'Worker',
       required: true,
     },
 
     sale: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Sale",
+      ref: 'Sale',
       required: true,
     },
 
@@ -28,18 +28,14 @@ const workerDebtSchema = new mongoose.Schema(
 
     status: {
       type: String,
-      enum: ["Pending", "Partially Paid", "Paid"],
-      default: "Pending",
-    },
-
-    notes: {
-      type: String,
-      trim: true,
+      enum: ['Unpaid', 'Partially Paid', 'Paid'],
+      default: 'Unpaid',
     },
 
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
+      default: null,
     },
   },
   {
@@ -47,4 +43,4 @@ const workerDebtSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("WorkerDebt", workerDebtSchema);
+module.exports = mongoose.model('WorkerDebt', workerDebtSchema);

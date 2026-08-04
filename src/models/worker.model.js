@@ -20,12 +20,6 @@ const workerSchema = new mongoose.Schema(
       unique: true,
     },
 
-    role: {
-      type: String,
-      enum: ['cashier'],
-      default: 'cashier',
-    },
-
     totalDebt: {
       type: Number,
       default: 0,

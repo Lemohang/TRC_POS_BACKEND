@@ -6,6 +6,7 @@ const Inventory = require('../models/inventory.model');
 const Table = require('../models/table.model');
 const WorkerDebt = require('../models/workerDebt.model');
 const counterService = require('./counter.service');
+const Worker = require('../models/worker.model');
 
 // ==========================
 // CREATE SALE
@@ -18,19 +19,17 @@ const createSale = async (saleData) => {
 
     const {
       saleType = 'table',
-
       table,
-
       cashier,
-
-      worker,
 
       paymentMethod,
 
+      worker,
+      customer,
+      customerType = 'Customer',
+
       discount = 0,
-
       notes,
-
       items,
     } = saleData;
 
@@ -68,8 +67,14 @@ const createSale = async (saleData) => {
     // ==========================
     // WORKER DEBT VALIDATION
     // ==========================
-    if (paymentMethod === 'Worker Debt' && !worker) {
-      throw new Error('Worker is required for Worker Debt purchases.');
+    // ==========================
+    // CREDIT VALIDATION
+    // ==========================
+
+    if (paymentMethod === 'Credit') {
+      if (!worker) {
+        throw new Error('Worker is required for credit sales.');
+      }
     }
 
     const orderNumber = await counterService.getNextSequence('sale', session);
@@ -88,8 +93,6 @@ const createSale = async (saleData) => {
 
           cashier,
 
-          worker,
-
           paymentMethod,
 
           subtotal: 0,
@@ -101,6 +104,12 @@ const createSale = async (saleData) => {
           notes,
 
           status: 'Open',
+
+          worker: worker || null,
+
+          customer: customer || worker || null,
+
+          customerType,
         },
       ],
       {
@@ -165,20 +174,14 @@ const createSale = async (saleData) => {
     });
 
     // ==========================
-    // OCCUPY TABLE
+    // CREATE WORKER CREDIT DEBT
     // ==========================
-    if (saleType === 'table' && selectedTable) {
-      selectedTable.status = 'Occupied';
 
-      await selectedTable.save({
-        session,
-      });
-    }
+    if (paymentMethod === 'Credit') {
+      if (!worker) {
+        throw new Error('Worker is required for credit sales.');
+      }
 
-    // ==========================
-    // CREATE WORKER DEBT
-    // ==========================
-    if (paymentMethod === 'Worker Debt') {
       await WorkerDebt.create(
         [
           {
@@ -190,15 +193,38 @@ const createSale = async (saleData) => {
 
             balance: sale.total,
 
-            status: 'Pending',
+            status: 'Unpaid',
 
-            createdBy: cashier,
+            createdBy: cashier || null,
           },
         ],
         {
           session,
         }
       );
+
+      await Worker.findByIdAndUpdate(
+        worker,
+        {
+          $inc: {
+            totalDebt: sale.total,
+          },
+        },
+        {
+          session,
+        }
+      );
+    }
+
+    // ==========================
+    // OCCUPY TABLE
+    // ==========================
+    if (saleType === 'table' && selectedTable) {
+      selectedTable.status = 'Occupied';
+
+      await selectedTable.save({
+        session,
+      });
     }
 
     await session.commitTransaction();
@@ -394,7 +420,11 @@ const completeSale = async (id) => {
 
     await session.commitTransaction();
 
-    return await Sale.findById(sale._id).populate('cashier').populate('worker').populate('table');
+    return await Sale.findById(sale._id)
+      .populate('cashier')
+      .populate('worker')
+      .populate('customer')
+      .populate('table');
   } catch (error) {
     await session.abortTransaction();
 
