@@ -103,7 +103,7 @@ const createSale = async (saleData) => {
 
           notes,
 
-          status: 'Open',
+          status: saleType === 'table' && paymentMethod !== 'Credit' ? 'Open' : 'Paid',
 
           worker: worker || null,
 
@@ -354,16 +354,40 @@ const getOpenSaleByTable = async (tableId) => {
 // GET ALL SALES
 // ==========================
 const getAllSales = async () => {
-  return await Sale.find().populate('cashier').populate('worker').populate('table').sort({
-    orderNumber: -1,
-  });
+  const sales = await Sale.find()
+    .populate('cashier')
+    .populate('worker')
+    .populate('customer')
+    .populate('table')
+    .sort({
+      orderNumber: -1,
+    });
+
+  const salesWithItems = await Promise.all(
+    sales.map(async (sale) => {
+      const items = await SaleItem.find({
+        sale: sale._id,
+      }).populate('inventory');
+
+      return {
+        ...sale.toObject(),
+        items,
+      };
+    })
+  );
+
+  return salesWithItems;
 };
 
 // ==========================
 // GET SALE BY ID
 // ==========================
 const getSaleById = async (id) => {
-  const sale = await Sale.findById(id).populate('cashier').populate('worker').populate('table');
+  const sale = await Sale.findById(id)
+    .populate('cashier')
+    .populate('worker')
+    .populate('customer')
+    .populate('table');
 
   if (!sale) {
     throw new Error('Sale not found.');
@@ -374,7 +398,7 @@ const getSaleById = async (id) => {
   }).populate('inventory');
 
   return {
-    sale,
+    ...sale.toObject(),
     items,
   };
 };
@@ -404,8 +428,6 @@ const completeSale = async (id) => {
       session,
     });
 
-    // Only release tables
-    // for restaurant orders
     if (sale.saleType === 'table' && sale.table) {
       await Table.findByIdAndUpdate(
         sale.table,
@@ -418,15 +440,19 @@ const completeSale = async (id) => {
       );
     }
 
-    await session.commitTransaction();
-
-    return await Sale.findById(sale._id)
+    const completedSale = await Sale.findById(sale._id)
       .populate('cashier')
       .populate('worker')
-      .populate('customer')
-      .populate('table');
+      .populate('table')
+      .session(session);
+
+    await session.commitTransaction();
+
+    return completedSale;
   } catch (error) {
-    await session.abortTransaction();
+    if (session.inTransaction()) {
+      await session.abortTransaction();
+    }
 
     throw error;
   } finally {
