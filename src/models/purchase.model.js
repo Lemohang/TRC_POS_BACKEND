@@ -1,22 +1,22 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const purchaseSchema = new mongoose.Schema(
   {
     supplier: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Supplier",
+      ref: 'Supplier',
       required: true,
     },
 
     invoiceNumber: {
       type: String,
-      required: true,
+      required: false,
       trim: true,
     },
 
     paymentMethod: {
       type: String,
-      enum: ["Cash", "Card", "Mobile Money", "Bank Transfer", "Credit"],
+      enum: ['Cash', 'Card', 'Mobile Money', 'Bank Transfer', 'Credit'],
       required: true,
     },
 
@@ -32,7 +32,7 @@ const purchaseSchema = new mongoose.Schema(
 
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
     },
   },
   {
@@ -40,4 +40,4 @@ const purchaseSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("Purchase", purchaseSchema);
+module.exports = mongoose.model('Purchase', purchaseSchema);

@@ -1,9 +1,9 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
-const Purchase = require("../models/purchase.model");
-const PurchaseItem = require("../models/purchaseItem.model");
-const Inventory = require("../models/inventory.model");
-const Supplier = require("../models/supplier.model");
+const Purchase = require('../models/purchase.model');
+const PurchaseItem = require('../models/purchaseItem.model');
+const Inventory = require('../models/inventory.model');
+const Supplier = require('../models/supplier.model');
 
 const createPurchase = async (purchaseData) => {
   const session = await mongoose.startSession();
@@ -11,20 +11,13 @@ const createPurchase = async (purchaseData) => {
   try {
     session.startTransaction();
 
-    const {
-      supplier,
-      invoiceNumber,
-      paymentMethod,
-      notes,
-      createdBy,
-      items,
-    } = purchaseData;
+    const { supplier, invoiceNumber, paymentMethod, notes, createdBy, items } = purchaseData;
 
     // Check supplier exists
     const supplierExists = await Supplier.findById(supplier).session(session);
 
     if (!supplierExists) {
-      throw new Error("Supplier not found.");
+      throw new Error('Supplier not found.');
     }
 
     // Create purchase
@@ -49,7 +42,7 @@ const createPurchase = async (purchaseData) => {
       const inventory = await Inventory.findById(item.inventory).session(session);
 
       if (!inventory) {
-        throw new Error("Inventory item not found.");
+        throw new Error('Inventory item not found.');
       }
 
       const itemTotal = item.quantity * item.buyingPrice;
@@ -79,10 +72,7 @@ const createPurchase = async (purchaseData) => {
 
     await session.commitTransaction();
 
-    return await Purchase.findById(purchase[0]._id)
-      .populate("supplier")
-      .session(session);
-
+    return await Purchase.findById(purchase[0]._id).populate('supplier');
   } catch (error) {
     await session.abortTransaction();
     throw error;
@@ -92,21 +82,34 @@ const createPurchase = async (purchaseData) => {
 };
 
 const getAllPurchases = async () => {
-  return await Purchase.find()
-    .populate("supplier")
-    .sort({ createdAt: -1 });
+  const purchases = await Purchase.find().populate('supplier').sort({ createdAt: -1 });
+
+  const result = await Promise.all(
+    purchases.map(async (purchase) => {
+      const items = await PurchaseItem.find({
+        purchase: purchase._id,
+      }).populate('inventory');
+
+      return {
+        ...purchase.toObject(),
+        items,
+      };
+    })
+  );
+
+  return result;
 };
 
 const getPurchaseById = async (id) => {
-  const purchase = await Purchase.findById(id).populate("supplier");
+  const purchase = await Purchase.findById(id).populate('supplier');
 
   if (!purchase) {
-    throw new Error("Purchase not found.");
+    throw new Error('Purchase not found.');
   }
 
   const items = await PurchaseItem.find({
     purchase: purchase._id,
-  }).populate("inventory");
+  }).populate('inventory');
 
   return {
     purchase,
