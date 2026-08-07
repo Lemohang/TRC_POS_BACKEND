@@ -354,14 +354,9 @@ const getOpenSaleByTable = async (tableId) => {
 // GET ALL SALES
 // ==========================
 const getAllSales = async () => {
-  const sales = await Sale.find()
-    .populate('cashier')
-    .populate('worker')
-    .populate('customer')
-    .populate('table')
-    .sort({
-      orderNumber: -1,
-    });
+  const sales = await Sale.find().populate('cashier').populate('worker').populate('table').sort({
+    orderNumber: -1,
+  });
 
   const salesWithItems = await Promise.all(
     sales.map(async (sale) => {
